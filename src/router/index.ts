@@ -1,8 +1,8 @@
-/* eslint-disable no-undef*/
-import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
+/* eslint-disable no-undef */
+import {createRouter, createWebHistory, RouteRecordRaw} from 'vue-router';
 import Home from '../views/Home.vue';
 
-const routes: Array<RouteRecordRaw> = [
+const routes: RouteRecordRaw[] = [
     {
         path: '/',
         name: 'Home',
