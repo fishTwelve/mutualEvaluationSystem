@@ -1,6 +1,7 @@
 <template>
-    <div class="hello">
+    <div>
         <input
+            v-show="false"
             ref="excel-upload-input"
             class="excel-upload-input"
             type="file"
@@ -13,16 +14,31 @@
             type="primary"
             size="small"
             @click="handleUpload"
-            >导入Excel</el-button
         >
+            导入Excel
+        </el-button>
+        <div>
+            <el-table
+                :data="tableData"
+                style="width: 100%; margin-top: 10px;"
+                border
+                highlight-current-row
+            >
+                <el-table-column
+                    v-for="item of tableHeader"
+                    :key="item"
+                    :prop="item"
+                    :label="item"
+                />
+            </el-table>
+        </div>
     </div>
 </template>
 
-<script lang="ts">
-import {defineComponent} from 'vue';
+<script>
 import XLSX from 'xlsx';
 
-export default defineComponent({
+export default {
     name: 'HelloWorld',
     props: {
         msg: String
@@ -30,20 +46,18 @@ export default defineComponent({
     data() {
         return {
             tableData: [],
-            loading: false,
-            xlsxJson: []
+            tableHeader: [],
         };
+    },
+    mounted() {
     },
     methods: {
         handleUpload() {
-            const dom = document.getElementsByClassName('excel-upload-input')[0]
-            dom.addEventListener('click', this.handleClick)
-            // this.$refs['excel-upload-input'].click();
-            // this.loading = true
+            this.$refs['excel-upload-input'].click();
         },
-        handleClick(e:any) {
-            let files = e.target.files;
-            let fileobj = files[0];
+        handleClick(e) {
+            const files = e.target.files;
+            const fileobj = files[0];
             const types = fileobj.name.split('.')[1];
             const fileType = [
                 'xlsx',
@@ -54,64 +68,66 @@ export default defineComponent({
                 'xlw',
                 'csv'
             ].some(item => item === types);
-            this.loading = true;
             if (!fileType) {
-                this.loading = false;
-                // this.$message('格式错误！请重新选择');
+                this.$message('格式错误！请重新选择');
                 return;
             }
-            this.file2Xce(fileobj).then((tabJson:any) => {
-                if (tabJson && tabJson.length > 0) {
-                    this.xlsxJson = tabJson;
-                    this.loading = false;
-                    console.log('数据', this.xlsxJson);
-                    // xlsxJson就是解析出来的json数据,数据格式如下
-                    // [
-                    //   {
-                    //     sheetName: sheet1
-                    //     sheet: sheetData
-                    //   }
-                    // ]
+            this.file2Xce(fileobj).then(tabJson => {
+                if (tabJson && tabJson.length) {
+                    this.tableData = tabJson;
                 }
             });
         },
-        file2Xce(file: object) {
-            let self:any = this;
-            return new Promise(function (resolve, reject) {
-                const reader:any = new FileReader();
-                reader.onload = function (e:any) {
-                    const data = e?.target?.result ? e.target.result : null;
-                    self.wb = XLSX.read(data, {type: 'binary'});
-                    console.log('binary格式是：', self.wb);
-                    // 这段代码是处理成表格显示到页面上
-                    let firstSheetName = self.wb.SheetNames[0];
-                    let worksheet = self.wb.Sheets[firstSheetName];
+        file2Xce(file) {
+            return new Promise(resolve => {
+                const reader = new FileReader();
+                reader.readAsBinaryString(file);
+                reader.onload = e => {
+                    const data = e.target.result;
+                    this.wb = XLSX.read(data, {type: 'binary'});
+                    const firstSheetName = this.wb.SheetNames[0];
+                    const worksheet = this.wb.Sheets[firstSheetName];
                     if (worksheet['!ref'] === undefined) {
-                        self.$message('excel文件为空！请重新选择');
-                        self.loading = false;
+                        this.$message('excel文件为空！请重新选择');
+                        this.loading = false;
                         return false;
                     }
-                    let results = XLSX.utils.sheet_to_json(worksheet);
-                    self.tableData = results;
-                    console.log('表格数据是：', results);
-                    console.log(self.tableData)
-                    const result:any = [];
-                    self.wb.SheetNames.forEach((sheetName: any) => {
-                        result.push({
-                            sheetName: sheetName,
-                            sheet: XLSX.utils.sheet_to_json(
-                                self.wb.Sheets[sheetName]
-                            )
-                        });
-                    });
-                    resolve(result);
+                    const header = this.getHeaderRow(worksheet);
+                    const results = XLSX.utils.sheet_to_json(worksheet);
+                    this.tableHeader = header;
+                    resolve(results);
                 };
-                // reader.readAsBinaryString(file.raw)
-                reader.readAsBinaryString(file);
             });
+        },
+        getHeaderRow(sheet) {
+            const headers = [];
+
+            // 获取工作表的范围
+            const range = XLSX.utils.decode_range(sheet['!ref']);
+
+            // 行
+            let C;
+
+            // 列
+            const R = range.s.r;
+            for (C = range.s.c; C <= range.e.c; ++C) {
+
+                // 获取单元格的值
+                const cell = sheet[XLSX.utils.encode_cell({c: C, r: R})];
+
+                // 默认值
+                let hdr = 'UNKNOWN ' + C;
+                if (cell && cell.t) {
+
+                    // 生成单元格文本值
+                    hdr = XLSX.utils.format_cell(cell);
+                };
+                headers.push(hdr);
+            }
+            return headers;
         }
     }
-});
+};
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

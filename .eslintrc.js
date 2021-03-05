@@ -1,34 +1,23 @@
 module.exports = {
-    env: {
-        'browser': true,
-        'es6': true
+    "env": {
+        "browser": true,
+        "es6": true
     },
-    extends: [
+    "extends": [
         '@ecomfe/eslint-config',
-        '@ecomfe/eslint-config/vue',
-        '@ecomfe/eslint-config/typescript'
+        '@ecomfe/eslint-config/vue'
     ],
-    globals: {
-        'Atomics': 'readonly',
-        'SharedArrayBuffer': 'readonly'
+    "globals": {
+        "Atomics": "readonly",
+        "SharedArrayBuffer": "readonly"
     },
-    parserOptions: {
-        'ecmaVersion': 2018,
-        'sourceType': 'module',
-        requireConfigFile: false,
-        tsconfigRootDir: __dirname,
-        project: [
-            'tsconfig.json'
-        ],
+    "parserOptions": {
+        "ecmaVersion": 2018,
+        "sourceType": "module"
     },
-    rules: {
-        'no-use-before-define': 'off',
-        '@typescript-eslint/no-require-imports': 'warn',
-        '@typescript-eslint/no-var-requires': 'warn',
-        '@typescript-eslint/no-use-before-define': ['error', {'functions': false}],
-        '@typescript-eslint/prefer-for-of': 'off',
-        '@typescript-eslint/member-ordering': 'off',
-        'comma-dangle': 'off',
-        'vue/require-direct-export': 'off'
+    "rules": {
+        'vue/require-default-prop': 1,
+        'no-use-before-define': 0,
+        'comma-dangle': 0
     }
 };
