@@ -15,14 +15,14 @@
             size="small"
             @click="handleUpload"
         >
-            导入Excel
+            导入
         </el-button>
         <div>
             <el-table
                 :data="tableData"
                 style="width: 100%; margin-top: 10px;"
-                border
                 highlight-current-row
+                empty-text="无数据"
             >
                 <el-table-column
                     v-for="item of tableHeader"
@@ -39,7 +39,7 @@
 import XLSX from 'xlsx';
 
 export default {
-    name: 'HelloWorld',
+    name: 'StudentImport',
     props: {
         msg: String
     },
@@ -47,9 +47,37 @@ export default {
         return {
             tableData: [],
             tableHeader: [],
+            test: undefined
         };
     },
     mounted() {
+        // const test = {
+        //     animial: {
+        //         dog: {
+        //             test: 'yjy'
+        //         }
+        //     }
+        // };
+        // const run = test?.animial?.ca;
+        // console.log(run);
+        // console.log(test.animial.dog.any.age);
+
+        // if (test.animial && test.animial.cat) {
+        //     console.log('run1');
+        // }
+        // if (test?.animial?.cat) {
+        //     console.log('run2');
+        // }
+        const a = {
+            num: 0
+        };
+        /* eslint-disable */
+        a.valueOf = function() {
+            return this.num;
+        };
+        console.log(typeof a.valueOf());
+        console.log(typeof a.num);
+        console.log(a.num === a.valueOf())
     },
     methods: {
         handleUpload() {

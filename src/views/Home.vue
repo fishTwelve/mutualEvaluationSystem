@@ -1,16 +1,16 @@
 <template>
     <div class="home">
-        <hello-world/>
+        <student-import/>
     </div>
 </template>
 
 <script>
-import HelloWorld from '@/components/HelloWorld.vue';
+import StudentImport from '@/components/StudentImport.vue';
 
 export default {
     name: 'Home',
     components: {
-        HelloWorld,
+        StudentImport,
     },
 };
 </script>
