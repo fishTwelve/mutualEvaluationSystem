@@ -1,3 +1,14 @@
+body {
+    height: 100%;
+    overflow: hidden;
+}
 .color {
     color: #FFF;
 }
+.row {
+    margin-bottom: 20px;
+}
+.row-small {
+    margin-bottom: 10px;
+}
+
